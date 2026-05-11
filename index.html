@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>VT Expense</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--pr:#1a237e;--prl:#3949ab;--prd:#0d1642;--ac:#ff6f00;--acl:#ffa040;--ok:#2e7d32;--er:#c62828;--bg:#f0f2f5;--wh:#fff;--tx:#1a1a2e;--txl:#6b7280;--bd:#e0e0e0;--sh:0 3px 14px rgba(0,0,0,.07);--f:'Segoe UI',Tahoma,Verdana,sans-serif}
+html{height:100%}
+body{font-family:var(--f);background:var(--bg);color:var(--tx);min-height:100%;overflow-x:hidden}
+body.dk{--bg:#0f1117;--wh:#1e2030;--tx:#e0e6f0;--txl:#9ca3af;--bd:#374151}
+body.dk .tb,body.dk .cd,body.dk .sc,body.dk .mo-box{background:#1e2030!important;border-color:#374151!important}
+body.dk th{background:#161826!important}
+body.dk .rt{background:#252840!important}
+body.dk .tb-btn{background:#252840!important;color:var(--tx)!important}
+body.dk input,body.dk select,body.dk textarea{background:#252840!important;color:var(--tx)!important;border-color:#374151!important}
+body.dk .erow{background:#1e2030!important;border-color:#374151!important}
+body.dk .apv-card{background:#1e2030!important;border-color:#374151!important}
+body.dk .ld{background:rgba(15,17,23,.92)}
+
+/* INTRO */
+#INT{position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#0d1642,#1a237e,#0d47a1);transition:opacity .8s,visibility .8s}
+#INT.hide{opacity:0;visibility:hidden;pointer-events:none}
+.il svg{width:88px;height:88px;animation:lgA 1s cubic-bezier(.34,1.56,.64,1) forwards;filter:drop-shadow(0 0 18px rgba(0,191,255,.4))}
+@keyframes lgA{from{transform:scale(.2) rotate(-15deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.ico{font-family:'Times New Roman',serif;font-size:22px;font-weight:900;color:#fff;letter-spacing:2px;margin-top:14px;opacity:0;animation:su .7s .7s forwards;text-align:center}
+.isl{font-size:9px;color:rgba(255,255,255,.5);letter-spacing:3px;margin-top:4px;opacity:0;animation:su .7s 1s forwards;text-transform:uppercase;text-align:center}
+.ibw{margin-top:20px;width:150px;height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;opacity:0;animation:fd .3s 1.2s forwards}
+.ibar{height:100%;width:0;background:linear-gradient(90deg,#00BFFF,#fff);border-radius:3px;animation:bf 1.2s 1.3s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes su{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fd{from{opacity:0}to{opacity:1}}
+@keyframes bf{from{width:0}to{width:100%}}
+
+#DK{position:fixed;bottom:14px;right:14px;z-index:9000;width:40px;height:40px;border:none;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--prl));color:#fff;font-size:17px;cursor:pointer;box-shadow:var(--sh);display:flex;align-items:center;justify-content:center}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:290}.sb-ov.show{display:block}
+.btn{padding:9px 14px;border:none;border-radius:8px;cursor:pointer;font-size:11px;font-weight:700;transition:.18s;display:inline-flex;align-items:center;gap:4px;font-family:var(--f);touch-action:manipulation}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-pr{background:linear-gradient(135deg,var(--pr),var(--prl));color:#fff;width:100%;justify-content:center;padding:12px}
+.btn-ac{background:linear-gradient(135deg,var(--ac),var(--acl));color:#fff}
+.btn-ok{background:linear-gradient(135deg,var(--ok),#43a047);color:#fff}
+.btn-er{background:linear-gradient(135deg,var(--er),#e53935);color:#fff}
+.btn-ol{background:transparent;border:1px solid var(--bd);color:var(--txl)}
+.btn-sm{padding:5px 9px;font-size:9px;border-radius:6px}
+.fg{margin-bottom:12px}
+.fg label{display:block;margin-bottom:3px;font-size:9px;font-weight:700;color:var(--txl);text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 12px;border:2px solid var(--bd);border-radius:9px;font-size:13px;background:#fafafa;font-family:var(--f);color:var(--tx);-webkit-appearance:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--pr)}
+.fg textarea{min-height:65px;resize:vertical}
+.lc{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--prd),var(--pr),var(--prl));padding:16px}
+.lb{width:100%;max-width:420px;background:#fff;border-radius:18px;padding:30px 26px;box-shadow:0 10px 40px rgba(0,0,0,.2);animation:ci .4s both}
+@keyframes ci{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ll{text-align:center;margin-bottom:18px}
+.lli{width:62px;height:62px;margin:0 auto 12px;background:linear-gradient(135deg,var(--pr),var(--ac));border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(26,35,126,.25)}
+.lli svg{width:40px;height:40px}
+.ll h1{font-size:16px;font-weight:900;color:var(--pr);font-family:'Times New Roman',serif}
+.ll .tg{font-size:9px;color:var(--ac);font-weight:700;letter-spacing:2px;margin-top:2px}
+.ll .ws{font-size:10px;color:var(--txl);margin-top:4px}.ll .ws a{color:#00BFFF;text-decoration:none}
+.rt{display:flex;margin-bottom:16px;background:#f0f2f5;border-radius:9px;padding:3px}
+.rti{flex:1;padding:9px 4px;text-align:center;cursor:pointer;border-radius:7px;font-size:10px;font-weight:700;color:var(--txl);text-transform:uppercase;user-select:none;transition:.2s}
+.rti.ac{background:var(--pr);color:#fff}
+.db{display:none;min-height:100vh}
+.sb{position:fixed;left:0;top:0;width:238px;height:100%;background:linear-gradient(180deg,var(--prd),var(--pr));color:#fff;z-index:300;overflow-y:auto;display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .3s ease}
+.sb.open{transform:translateX(0)}
+@media(min-width:769px){.sb{transform:translateX(0)!important}}
+.sb-h{padding:13px 15px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:9px}
+.sb-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--ac),var(--acl));border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-logo svg{width:19px;height:19px}
+.sb-br h3{font-size:10px;font-weight:800}.sb-br span{font-size:7px;color:var(--acl);letter-spacing:1px}
+.sb-u{padding:12px 15px;border-bottom:1px solid rgba(255,255,255,.1)}
+.uav{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--acl));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;margin-bottom:5px}
+.sb-u h4{font-size:11px}.sb-u p{font-size:8px;color:rgba(255,255,255,.35);word-break:break-all}
+.ubg{display:inline-block;padding:1px 7px;background:rgba(255,111,0,.2);color:var(--acl);border-radius:10px;font-size:7px;font-weight:700;margin-top:3px;text-transform:uppercase}
+.sn{padding:7px 0;flex:1}
+.ni{padding:9px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;font-size:11px;font-weight:500;color:rgba(255,255,255,.55);border-left:3px solid transparent;user-select:none;transition:.18s}
+.ni:hover,.ni.ac{background:rgba(255,255,255,.08);color:#fff;border-left-color:var(--ac)}
+.ni .bdg{margin-left:auto;background:var(--ac);color:#fff;padding:1px 5px;border-radius:6px;font-size:8px;font-weight:700}
+.sf{padding:10px 14px;border-top:1px solid rgba(255,255,255,.1);display:flex;gap:10px;flex-wrap:wrap}
+.sf a{color:rgba(255,255,255,.35);text-decoration:none;font-size:9px;cursor:pointer}
+.mc{margin-left:0;min-height:100vh}@media(min-width:769px){.mc{margin-left:238px}}
+.tb{background:#fff;padding:9px 15px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 6px rgba(0,0,0,.05);position:sticky;top:0;z-index:200;gap:5px;flex-wrap:wrap}
+.tb-l h2{font-size:14px;font-weight:700}.tb-l p{font-size:9px;color:var(--txl)}
+.tb-r{display:flex;gap:6px}
+.tb-btn{width:32px;height:32px;border:none;border-radius:8px;background:#f0f2f5;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;touch-action:manipulation}
+.tb-btn:hover{background:var(--pr);color:#fff}
+.mb-menu{display:none}@media(max-width:768px){.mb-menu{display:flex}}
+.ca{padding:13px}@media(min-width:769px){.ca{padding:18px}}
+.tc{display:none}.tc.ac{display:block}
+.sg{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:600px){.sg{grid-template-columns:repeat(4,1fr)}}
+.sc{background:#fff;border-radius:11px;padding:13px;box-shadow:var(--sh);display:flex;gap:9px;border:1px solid rgba(0,0,0,.04)}
+.si{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.si.bl{background:rgba(26,35,126,.1)}.si.or{background:rgba(255,111,0,.1)}.si.gr{background:rgba(46,125,50,.1)}.si.rd{background:rgba(198,40,40,.1)}
+.si-i h3{font-size:18px;font-weight:800;line-height:1.1}.si-i p{font-size:9px;color:var(--txl)}.si-i .tr{font-size:8px;color:var(--txl);margin-top:2px}
+.cd{background:#fff;border-radius:11px;box-shadow:var(--sh);margin-bottom:12px;border:1px solid rgba(0,0,0,.04);overflow:hidden}
+.ch{padding:10px 13px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:5px;flex-wrap:wrap}
+.ch h3{font-size:13px;font-weight:700}
+.cb{padding:12px}.cb.np{padding:0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;min-width:360px}
+th,td{padding:7px 9px;text-align:left;font-size:10px;border-bottom:1px solid #f0f0f0}
+th{background:#fafbfc;font-size:8px;font-weight:700;color:var(--txl);text-transform:uppercase;white-space:nowrap}
+tbody tr:hover{background:#f8fbff}
+.bdg2{display:inline-flex;align-items:center;gap:2px;padding:2px 6px;border-radius:10px;font-size:8px;font-weight:700;white-space:nowrap}
+.bpn{background:#fff3e0;color:#e65100}.bap{background:#e8f5e9;color:#2e7d32}.brj{background:#ffebee;color:#c62828}
+.exp-bar2{display:flex;gap:4px;flex-wrap:wrap;align-items:center;padding:8px 11px;background:#f8f9fa;border-bottom:1px solid var(--bd)}
+.ehdr{display:none;padding:5px 8px;background:var(--pr);border-radius:7px 7px 0 0}
+.ehdr-inner{display:grid;grid-template-columns:26px 78px 1fr 1fr 62px 1fr 72px 44px 22px;gap:3px;align-items:center}
+.ehdr-inner span{color:#fff;font-size:7px;font-weight:700;text-transform:uppercase}
+@media(min-width:769px){.ehdr{display:block}}
+.erow{border-bottom:1px solid var(--bd);padding:4px 8px;background:#fff;transition:.1s}
+.erow:nth-child(even){background:#fafbfc}.erow:hover{background:#e8f0fe!important}
+.erow.err{background:#fff5f5!important;border-left:3px solid var(--er)}
+.erow-inner{display:grid;grid-template-columns:26px 78px 1fr 1fr 62px 1fr 72px 44px 22px;gap:3px;align-items:center}
+.erow-inner .rn{width:20px;height:20px;background:var(--pr);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0}
+.erow-inner input,.erow-inner select{width:100%;padding:4px 5px;border:1px solid var(--bd);border-radius:5px;font-size:9px;font-family:var(--f);background:#fff;color:var(--tx);-webkit-appearance:none}
+.erow-inner input:focus,.erow-inner select:focus{outline:none;border-color:var(--pr)}
+.erow-inner input[type="number"]{text-align:right;font-weight:700}
+.erow-inner input[type="file"]{font-size:8px;padding:2px;border-style:dashed;cursor:pointer}
+.erow-inner .dl{width:18px;height:18px;border:none;border-radius:50%;background:var(--er);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;cursor:pointer;flex-shrink:0}
+.det-cell{display:flex;gap:3px;align-items:center;min-width:0}
+.det-cell input{flex:1;min-width:0}
+.det-cell .sep{font-size:8px;color:var(--ok);font-weight:700;flex-shrink:0}
+@media(max-width:768px){.erow{padding:9px;margin-bottom:5px;border:1.5px solid var(--bd);border-radius:9px;position:relative}.erow-inner{grid-template-columns:1fr 1fr;gap:6px}.erow-inner .rn{position:absolute;top:-9px;left:8px}.erow-inner .dl{position:absolute;top:6px;right:6px}.det-cell{flex-wrap:wrap}}
+.tot-bar{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border-radius:0 0 8px 8px;flex-wrap:wrap;gap:5px}
+.tot-bar .tl{font-size:15px;font-weight:800;color:var(--ok)}.tot-bar .ti{font-size:9px;color:var(--txl)}
+.hist-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:9px;margin:10px 12px}
+.hs-card{background:#fff;border-radius:10px;padding:12px;box-shadow:var(--sh);border-left:4px solid var(--pr);text-align:center}
+.hs-val{font-size:16px;font-weight:800;color:var(--pr)}
+.hs-lbl{font-size:8px;color:var(--txl);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.apv-card{border:1.5px solid var(--bd);border-radius:11px;padding:13px;margin-bottom:9px;background:#fff}
+.apv-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:5px}
+.apv-eng{font-weight:700;font-size:12px}.apv-proj{font-size:9px;color:var(--ac);font-weight:600}
+.apv-det{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin-bottom:8px}
+.apv-det label{font-size:8px;color:var(--txl);font-weight:700;text-transform:uppercase}
+.apv-det p{font-size:10px;font-weight:600}
+.apv-desc{background:#f8f9fa;border-radius:7px;padding:8px;margin-bottom:8px;font-size:10px;line-height:1.4}
+.apv-acts{display:flex;gap:5px;flex-wrap:wrap}
+.attl{display:inline-block;color:var(--pr);font-size:9px;font-weight:600;text-decoration:none;padding:3px 7px;background:rgba(26,35,126,.07);border-radius:6px;margin-bottom:6px}
+.fl-sel{padding:5px 9px;border:1.5px solid var(--bd);border-radius:7px;font-size:9px;background:#fff;font-family:var(--f);color:var(--tx);-webkit-appearance:none}
+.ebar{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fg.full{grid-column:1/-1}
+@media(max-width:520px){.fr{grid-template-columns:1fr}}
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);padding:12px}
+.mo.ac{display:flex}
+.mo-box{background:#fff;border-radius:14px;width:100%;max-width:720px;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2);animation:mon .22s}
+@keyframes mon{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.mo-hd{padding:13px 15px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1}
+.mo-hd h3{font-size:13px;font-weight:700}
+.mo-cl{width:26px;height:26px;border:none;border-radius:6px;background:#f0f2f5;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center}
+.mo-bd{padding:14px}
+.mo-ft{padding:11px 14px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:6px;position:sticky;bottom:0;background:#fff}
+.det-t{width:100%;border-collapse:collapse}
+.det-t td{padding:8px 10px;border-bottom:1px solid #f0f0f0;font-size:11px}
+.det-t tr:nth-child(odd){background:#f9f9f9}
+.det-t .lbl{font-weight:700;width:35%;color:var(--txl)}
+.tc-c{position:fixed;top:10px;right:10px;z-index:99000;display:flex;flex-direction:column;gap:6px;pointer-events:none;max-width:290px}
+.toast{padding:9px 13px;border-radius:8px;color:#fff;font-weight:600;font-size:11px;box-shadow:0 4px 16px rgba(0,0,0,.18);animation:tin .22s,tout .3s 2.8s forwards;display:flex;align-items:center;gap:6px;pointer-events:all}
+.tok{background:linear-gradient(135deg,var(--ok),#43a047)}.ter{background:linear-gradient(135deg,var(--er),#e53935)}.tin2{background:linear-gradient(135deg,var(--pr),var(--prl))}.twn{background:linear-gradient(135deg,#f57f17,#f9a825)}
+@keyframes tin{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes tout{from{opacity:1}to{opacity:0;transform:translateX(110%)}}
+.ld{position:fixed;inset:0;background:rgba(255,255,255,.92);z-index:98000;display:none;align-items:center;justify-content:center;flex-direction:column}
+.ld.ac{display:flex}
+.ldr{width:38px;height:38px;border:3px solid var(--bd);border-top-color:var(--pr);border-radius:50%;animation:sp .75s linear infinite;margin-bottom:9px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ld p{color:var(--pr);font-weight:700;font-size:11px}
+.hid{display:none!important}
+</style>
+</head>
+<body>
+
+<div id="INT"><div class="il"><svg viewBox="0 0 100 100"><polygon points="10,10 50,10 50,90" fill="#7FD1FF" opacity=".95"/><polygon points="50,10 90,10 50,90" fill="#1E5BB5"/><polygon points="55,15 35,50 48,50 42,80 68,42 50,42" fill="#fff"/><circle cx="68" cy="42" r="4" fill="#ffa040"/></svg></div><div class="ico">VISHAL TECHNOPOWER</div><div class="isl">Engineering Your Electrical Needs</div><div class="ibw"><div class="ibar"></div></div></div>
+<div class="tc-c" id="TC"></div>
+<div class="ld" id="LD"><div class="ldr"></div><p id="LT">Loading...</p></div>
+<button id="DK" onclick="tgDk()">🌙</button>
+<div class="sb-ov" id="SBOV" onclick="closeAllSb()"></div>
+
+<div id="LP"><div class="lc"><div class="lb">
+<div class="ll"><div class="lli"><svg viewBox="0 0 100 100"><polygon points="10,10 50,10 50,90" fill="rgba(255,255,255,.9)"/><polygon points="50,10 90,10 50,90" fill="#1E5BB5"/><polygon points="55,15 35,50 48,50 42,80 68,42 50,42" fill="#fff"/></svg></div><h1>VISHAL TECHNOPOWER</h1><div class="tg">Expense Management System</div><div class="ws">🌐 <a href="https://vishaltechnopower.com/" target="_blank">vishaltechnopower.com</a></div></div>
+<div class="rt"><div class="rti ac" onclick="sR('engineer',0)">Engineer</div><div class="rti" onclick="sR('manager',1)">Manager</div><div class="rti" onclick="sR('accounts',2)">Accounts</div></div>
+<form id="ELF" onsubmit="doLogin(event,'engineer')"><div class="fg"><label>Employee ID</label><input id="EID" placeholder="VT001" required></div><div class="fg"><label>Password</label><input type="password" id="EPW" required></div><button class="btn btn-pr" id="ELB">Sign In</button></form>
+<form id="MLF" class="hid" onsubmit="doLogin(event,'manager')"><div class="fg"><label>Select Manager</label><select id="MGM"><option value="">Select</option><option value="projects5.vishalelectricals@yahoo.com">CHANDRA</option><option value="vicky.vishalelectricals@yahoo.com">VICKY (PM HEAD)</option><option value="projectspm.ve@gmail.com">RAVI YADAV</option></select></div><div class="fg"><label>Password</label><input type="password" id="MPW" required></div><button class="btn btn-pr" id="MLB">Sign In</button></form>
+<form id="ALF" class="hid" onsubmit="doLogin(event,'accounts')"><div class="fg"><label>Accounts ID</label><input id="AID" placeholder="ACCOUNTS" required></div><div class="fg"><label>Password</label><input type="password" id="APW" required></div><button class="btn btn-pr" id="ALB">Sign In</button></form>
+</div></div></div>
+
+<!-- ENGINEER -->
+<div class="db" id="ED">
+<div class="sb" id="ESB">
+<div class="sb-h"><div class="sb-logo"><svg viewBox="0 0 100 100" width="19" height="19"><polygon points="10,10 50,10 50,90" fill="rgba(255,255,255,.9)"/><polygon points="50,10 90,10 50,90" fill="#1E5BB5"/><polygon points="55,15 35,50 48,50 42,80 68,42 50,42" fill="#fff"/></svg></div><div class="sb-br"><h3>VISHAL TECHNOPOWER</h3><span>EXPENSE</span></div></div>
+<div class="sb-u"><div class="uav" id="EAV">E</div><div><h4 id="ENM">Engineer</h4><p id="EID2">VT001</p><div class="ubg">Engineer</div></div></div>
+<nav class="sn"><div class="ni ac" onclick="eTab('dash')">Dashboard</div><div class="ni" onclick="eTab('add')">Add Expense</div><div class="ni" onclick="eTab('hist')">History</div><div class="ni" onclick="eTab('apv')">Work Approval <span class="bdg" id="EAB">0</span></div></nav>
+<div class="sf"><a onclick="doLogout()">Logout</a><a href="https://vishaltechnopower.com/" target="_blank">Website</a></div>
+</div>
+<div class="mc">
+<div class="tb"><div style="display:flex;align-items:center;gap:7px"><button class="tb-btn mb-menu" onclick="tgSb('ESB')">☰</button><div class="tb-l"><h2 id="ETT">Dashboard</h2><p id="EDT"></p></div></div><div class="tb-r"><button class="tb-btn" onclick="rE()">🔄</button><button class="tb-btn" onclick="doLogout()">🚪</button></div></div>
+<div class="ca">
+
+<div class="tc ac" id="ET-dash"><div class="sg" id="EST"></div><div class="cd"><div class="ch"><h3>Work Approvals</h3><button class="btn btn-sm btn-ac" onclick="eTab('apv')">View All</button></div><div class="cb np"><div class="tw"><table id="ERT"><thead><tr><th>#</th><th>Date</th><th>Project</th><th>Amount</th><th>Status</th></tr></thead><tbody></tbody></table></div></div></div></div>
+
+<div class="tc" id="ET-add"><div class="cd"><div class="ch"><h3>Add Expenses</h3></div>
+<div class="exp-bar2"><button class="btn btn-sm btn-ok" onclick="addR()">+ Row</button><button class="btn btn-sm btn-ol" onclick="cpLast()">Copy Last</button><button class="btn btn-sm" style="background:#fff8e1;color:#f57f17;border:1px solid #ffe082" onclick="saveDraft()">Save Draft</button><button class="btn btn-sm" style="background:#e3f2fd;color:#1565c0;border:1px solid #90caf9" onclick="loadDraft()">Load Draft</button><button class="btn btn-sm" style="background:#f3e5f5;color:#7b1fa2;border:1px solid #ce93d8" onclick="showPrev()">Preview</button><button class="btn btn-sm btn-ac" onclick="submitAll()" id="SBT">Submit (<span id="RCC">0</span>)</button></div>
+<div class="cb np"><div class="ehdr"><div class="ehdr-inner"><span>#</span><span>Date</span><span>Project</span><span>Category</span><span>Sub</span><span>From→To / Description</span><span>Amount</span><span>Bill</span><span>✕</span></div></div><div id="EROWS"></div><div class="tot-bar"><div><span class="ti">Total: </span><span class="tl" id="TAM">Rs.0</span></div><div><span class="ti" id="RI2">0 rows</span></div></div></div></div></div>
+
+<div class="tc" id="ET-hist"><div class="cd"><div class="ch"><h3>Expense History</h3><button class="btn btn-sm btn-ac" onclick="doExp('expenses','engineer')">Export CSV</button></div>
+<div class="cb" style="border-bottom:1px solid var(--bd)"><div class="fr" style="align-items:end"><div class="fg" style="margin:0"><label>Start Date</label><input type="date" id="HST" onchange="lHist()"></div><div class="fg" style="margin:0"><label>End Date</label><input type="date" id="HED" onchange="lHist()"></div></div><div style="margin-top:8px;display:flex;gap:6px"><button class="btn btn-sm btn-ok" onclick="lHist()">Search</button><button class="btn btn-sm btn-ol" onclick="clrH()">Clear</button></div></div>
+<div id="HSUM"></div>
+<div class="cb np"><div class="tw"><table id="EHT"><thead><tr><th>#</th><th>Date</th><th>Project</th><th>Category</th><th>Amount</th><th>Status</th><th>Detail</th></tr></thead><tbody></tbody></table></div></div></div></div>
+
+<div class="tc" id="ET-apv">
+<div class="cd"><div class="ch"><h3>Submit Work Approval</h3></div><div class="cb"><form id="AFM" onsubmit="sApv(event)"><div class="fr"><div class="fg"><label>Project *</label><select id="APJ" required><option value="">Select</option></select></div><div class="fg"><label>Date *</label><input type="date" id="ADT2" required></div></div><div class="fr"><div class="fg"><label>Amount Rs. *</label><input type="number" id="AAM" min="1" required></div><div class="fg"><label>Attachment</label><input type="file" id="AFL2" accept=".jpg,.jpeg,.png,.pdf,.xlsx" style="padding:6px;border:1px dashed var(--bd);border-radius:7px;cursor:pointer"></div></div><div class="fg full"><label>Work Description *</label><textarea id="ADE" required placeholder="Work done details..."></textarea></div><div style="text-align:right"><button class="btn btn-ac" id="ASB2">Submit Approval</button></div></form></div></div>
+<div class="cd" style="margin-top:10px"><div class="ch"><h3>My Approvals</h3><div class="ebar"><select class="fl-sel" id="EAPF" onchange="lApv()"><option value="all">All</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select></div></div><div class="cb np"><div class="tw"><table id="EAT"><thead><tr><th>#</th><th>Date</th><th>Project</th><th>Amount</th><th>Description</th><th>Status</th><th>Remarks</th><th>Bill</th></tr></thead><tbody></tbody></table></div></div></div>
+</div>
+
+</div></div></div>
+
+<!-- MANAGER -->
+<div class="db" id="MD">
+<div class="sb" id="MSB">
+<div class="sb-h"><div class="sb-logo"><svg viewBox="0 0 100 100" width="19" height="19"><polygon points="10,10 50,10 50,90" fill="rgba(255,255,255,.9)"/><polygon points="50,10 90,10 50,90" fill="#1E5BB5"/><polygon points="55,15 35,50 48,50 42,80 68,42 50,42" fill="#fff"/></svg></div><div class="sb-br"><h3>VT MANAGER</h3><span>PORTAL</span></div></div>
+<div class="sb-u"><div class="uav" id="MAV" style="background:linear-gradient(135deg,#2e7d32,#43a047)">M</div><div><h4 id="MNM">Manager</h4><p id="MEM">email</p><div class="ubg" style="background:rgba(46,125,50,.2);color:#81c784">Manager</div></div></div>
+<nav class="sn"><div class="ni ac" onclick="mTab('dash')">Dashboard</div><div class="ni" onclick="mTab('apv')">Work Approvals <span class="bdg" id="MAB">0</span></div><div class="ni" onclick="mTab('exp')">Expense Records</div></nav>
+<div class="sf"><a onclick="doLogout()">Logout</a></div>
+</div>
+<div class="mc">
+<div class="tb"><div style="display:flex;align-items:center;gap:7px"><button class="tb-btn mb-menu" onclick="tgSb('MSB')">☰</button><div class="tb-l"><h2 id="MTT">Dashboard</h2><p id="MDT"></p></div></div><div class="tb-r"><button class="tb-btn" onclick="lMD()">🔄</button><button class="tb-btn" onclick="doLogout()">🚪</button></div></div>
+<div class="ca">
+<div class="tc ac" id="MT-dash"><div class="sg" id="MST"></div><div class="cd"><div class="ch"><h3>Projects</h3></div><div class="cb" id="MPJ"></div></div></div>
+<div class="tc" id="MT-apv"><div class="cd"><div class="ch"><h3>Work Approvals</h3><div class="ebar"><select class="fl-sel" id="MAPF" onchange="lMApv()"><option value="Pending">Pending</option><option value="all">All</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select></div></div><div class="cb" id="MAPD"></div></div></div>
+<div class="tc" id="MT-exp"><div class="cd"><div class="ch"><h3>Expense Records</h3><button class="btn btn-sm btn-ac" onclick="doExp('expenses','manager')">Export</button></div><div class="cb np"><div class="tw"><table id="MRT"><thead><tr><th>#</th><th>Date</th><th>Engineer</th><th>Project</th><th>Category</th><th>Amount</th><th>Status</th></tr></thead><tbody></tbody></table></div></div></div></div>
+</div></div></div>
+
+<!-- ACCOUNTS -->
+<div class="db" id="AD">
+<div class="sb" id="ASB3">
+<div class="sb-h"><div class="sb-logo"><svg viewBox="0 0 100 100" width="19" height="19"><polygon points="10,10 50,10 50,90" fill="rgba(255,255,255,.9)"/><polygon points="50,10 90,10 50,90" fill="#1E5BB5"/><polygon points="55,15 35,50 48,50 42,80 68,42 50,42" fill="#fff"/></svg></div><div class="sb-br"><h3>VT ACCOUNTS</h3><span>PORTAL</span></div></div>
+<div class="sb-u"><div class="uav" style="background:linear-gradient(135deg,#1565c0,#1976d2)">A</div><div><h4>Accounts Dept.</h4><p>accounts@vishaltechnopower.com</p><div class="ubg" style="background:rgba(21,101,192,.2);color:#64b5f6">Accounts</div></div></div>
+<nav class="sn"><div class="ni ac" onclick="aTab('dash')">Dashboard</div><div class="ni" onclick="aTab('exp')">All Expenses</div><div class="ni" onclick="aTab('apv')">Approvals</div><div class="ni" onclick="aTab('rpt')">Reports</div><div class="ni" onclick="aTab('pay')">Send Payment</div></nav>
+<div class="sf"><a onclick="doLogout()">Logout</a></div>
+</div>
+<div class="mc">
+<div class="tb"><div style="display:flex;align-items:center;gap:7px"><button class="tb-btn mb-menu" onclick="tgSb('ASB3')">☰</button><div class="tb-l"><h2 id="ATT">Dashboard</h2><p id="ADT3"></p></div></div><div class="tb-r"><button class="tb-btn" onclick="lAD()">🔄</button><button class="tb-btn" onclick="doLogout()">🚪</button></div></div>
+<div class="ca">
+
+<div class="tc ac" id="AT-dash"><div class="sg" id="AST2"></div><div class="cd"><div class="ch"><h3>Recent Approvals</h3></div><div class="cb np"><div class="tw"><table id="ART2"><thead><tr><th>#</th><th>Date</th><th>Engineer</th><th>Project</th><th>Amount</th><th>Status</th></tr></thead><tbody></tbody></table></div></div></div></div>
+
+<div class="tc" id="AT-exp"><div class="cd"><div class="ch"><h3>All Expenses</h3><div class="ebar"><select class="fl-sel" id="AEPF" onchange="lAE()"><option value="all">All Projects</option></select><button class="btn btn-sm btn-ac" onclick="doExp('expenses','accounts')">Export</button></div></div><div class="cb np"><div class="tw"><table id="AET2"><thead><tr><th>#</th><th>Date</th><th>Eng</th><th>Project</th><th>Cat</th><th>Sub</th><th>From</th><th>To/Desc</th><th>Amount</th><th>Status</th><th>Bill</th></tr></thead><tbody></tbody></table></div></div></div></div>
+
+<div class="tc" id="AT-apv"><div class="cd"><div class="ch"><h3>Work Approvals</h3><div class="ebar"><select class="fl-sel" id="AAPF" onchange="lAA()"><option value="all">All</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option></select><button class="btn btn-sm btn-ac" onclick="doExp('approvals','accounts')">Export</button></div></div><div class="cb np"><div class="tw"><table id="AAT2"><thead><tr><th>#</th><th>Date</th><th>Engineer</th><th>Project</th><th>Amount</th><th>Description</th><th>Status</th><th>By</th><th>Remarks</th><th>Bill</th></tr></thead><tbody></tbody></table></div></div></div></div>
+
+<div class="tc" id="AT-rpt">
+<div class="cd"><div class="ch"><h3>Project Summary</h3></div><div class="cb np"><div class="tw"><table id="APT2"><thead><tr><th>Project</th><th>Expenses</th><th>Total Amount</th></tr></thead><tbody></tbody></table></div></div></div>
+<div class="cd" style="margin-top:10px"><div class="ch"><h3>Engineer Summary</h3></div><div class="cb np"><div class="tw"><table id="AERT2"><thead><tr><th>Engineer</th><th>ID</th><th>Expenses</th><th>Total Amount</th></tr></thead><tbody></tbody></table></div></div></div>
+</div>
+
+<!-- PAYMENT TAB - Only visible in Accounts login -->
+<div class="tc" id="AT-pay">
+<div class="cd"><div class="ch"><h3>Send Payment Email to Engineer</h3></div>
+<div class="cb">
+<p style="font-size:10px;color:var(--txl);margin-bottom:14px;line-height:1.5">Enter engineer email, amount paid, UTR number and any custom message. Email will be sent to engineer with payment details.</p>
+<div class="fr"><div class="fg"><label>Engineer Email *</label><input type="email" id="PAY-EM" placeholder="engineer@email.com" required></div><div class="fg"><label>Engineer Name (Optional)</label><input id="PAY-NM" placeholder="e.g. SUJIT VAL"></div></div>
+<div class="fg"><label>Or Select from List</label><select id="PAY-SEL" onchange="fillPay()"><option value="">-- Select Engineer --</option></select></div>
+<div class="fr"><div class="fg"><label>Amount Paid (Rs.) *</label><input type="number" id="PAY-AMT" min="1" placeholder="0" required></div><div class="fg"><label>UTR / Reference Number *</label><input id="PAY-UTR" placeholder="UTR123456789" required></div></div>
+<div class="fg full"><label>Custom Message (Optional - You can type anything)</label><textarea id="PAY-MSG" rows="5" placeholder="e.g. Payment for IOCL Moradabad expenses July 2025.&#10;&#10;Please check your bank account within 24 hours.&#10;&#10;For any query contact accounts@vishaltechnopower.com"></textarea></div>
+<div style="background:#e8f5e9;border-radius:8px;padding:10px;margin-bottom:12px;font-size:10px;color:#2e7d32"><b>Email Preview:</b><br>Subject: [VT Payment] Rs.[Amount] | UTR: [Number]<br>Body: Payment details + UTR + Your custom message</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-ok" onclick="sendPay()" id="PAY-BTN">Send Payment Email</button><button class="btn btn-ol" onclick="clrPay()">Clear Form</button></div>
+</div></div>
+</div>
+
+</div></div></div>
+
+<!-- MODALS -->
+<div class="mo" id="RMO"><div class="mo-box" style="max-width:400px"><div class="mo-hd"><h3>Reject with Reason</h3><button class="mo-cl" onclick="cR()">✕</button></div><div class="mo-bd"><div class="fg"><label>Reason / Remarks</label><textarea id="RMT" rows="4" placeholder="Enter reason..."></textarea></div></div><div class="mo-ft"><button class="btn btn-ol btn-sm" onclick="cR()">Cancel</button><button class="btn btn-er btn-sm" onclick="doRej()">Confirm Reject</button></div></div></div>
+<div class="mo" id="PMO"><div class="mo-box"><div class="mo-hd"><h3>Preview</h3><button class="mo-cl" onclick="cP()">✕</button></div><div class="mo-bd" id="PMB"></div><div class="mo-ft"><button class="btn btn-ol btn-sm" onclick="cP()">Close</button><button class="btn btn-ok btn-sm" onclick="cP();submitAll()">Submit</button></div></div></div>
+<div class="mo" id="DETMO"><div class="mo-box" style="max-width:540px"><div class="mo-hd"><h3 id="DET-T">Expense Detail</h3><button class="mo-cl" onclick="cDet()">✕</button></div><div class="mo-bd" id="DETB"></div><div class="mo-ft"><button class="btn btn-ol btn-sm" onclick="cDet()">Close</button></div></div></div>
+
+<script>
+var CU=null,CR=null,CP=[],CA={},ENGS={},_ri=null,RC=0,_hd=[];
+var ALL_P=["IOCL Moradabad","IOCL Sarpara","IOCL Panipat Refinery","NCF Hyderabad","IOCL Bhatinda","NFC Hyderabad","IOCL Panipat Complex","AAI Chandigarh","AAI AMRITSAR","TLL PUNJAB","IOCL Jharsuguda","IOCL Jatni","IOCL Mumbai","Paradeep Port Authority","IOCL Salem","IOCL Paradeep HM","IOCL Hisar"];
+
+setTimeout(function(){document.getElementById('INT').classList.add('hide')},2500);
+function tgDk(){document.body.classList.toggle('dk');document.getElementById('DK').textContent=document.body.classList.contains('dk')?'☀️':'🌙';try{localStorage.setItem('dk',document.body.classList.contains('dk')?'1':'0')}catch(e){}}
+(function(){try{if(localStorage.getItem('dk')==='1'){document.body.classList.add('dk');document.getElementById('DK').textContent='☀️'}}catch(e){}})();
+
+function sL(t){document.getElementById('LD').classList.add('ac');document.getElementById('LT').textContent=t||'Loading...'}
+function hL(){document.getElementById('LD').classList.remove('ac')}
+function toast(m,t){var c=document.getElementById('TC'),d=document.createElement('div');d.className='toast '+(({ok:'tok',error:'ter',info:'tin2',warn:'twn'})[t]||'tok');d.innerHTML='<span>'+(t==='ok'?'✅':t==='error'?'❌':t==='warn'?'⚠️':'ℹ️')+'</span> '+m;c.appendChild(d);setTimeout(function(){try{c.removeChild(d)}catch(e){}},3300)}
+function fA(a){return'Rs.'+(Number(a)||0).toLocaleString('en-IN')}
+function fD(d){if(!d)return'-';try{var dt=new Date(d);return isNaN(dt)?String(d):dt.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return String(d)}}
+function td(){return new Date().toISOString().split('T')[0]}
+function nw(){return new Date().toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}
+function sB(s){return'<span class="bdg2 '+(s==='Approved'?'bap':s==='Rejected'?'brj':'bpn')+'">'+(s==='Approved'?'✅':s==='Rejected'?'❌':'⏳')+' '+s+'</span>'}
+function tD(t){if(!t||t==='undefined')return'-';var s=String(t);return s.length>28?s.substring(0,28)+'…':s}
+function eR(c,m){return'<tr><td colspan="'+c+'" style="text-align:center;padding:22px;color:#aaa">'+m+'</td></tr>'}
+function sC(i,c,v,l,s){return'<div class="sc"><div class="si '+c+'">'+i+'</div><div class="si-i"><h3>'+v+'</h3><p>'+l+'</p>'+(s?'<div class="tr">'+s+'</div>':'')+'</div></div>'}
+function fSel(id,items,ph){var s=document.getElementById(id);if(!s)return;s.innerHTML='<option value="">'+ph+'</option>';items.forEach(function(v){s.innerHTML+='<option value="'+v+'">'+v+'</option>'})}
+function f2b(f){return new Promise(function(r,j){if(!f){r(null);return}var rd=new FileReader();rd.onload=function(){r({name:f.name,data:rd.result,type:f.type})};rd.onerror=j;rd.readAsDataURL(f)})}
+function tgSb(id){if(window.innerWidth<769){var sb=document.getElementById(id);var o=sb.classList.contains('open');closeAllSb();if(!o){sb.classList.add('open');document.getElementById('SBOV').classList.add('show')}}}
+function closeAllSb(){document.querySelectorAll('.sb').forEach(function(s){s.classList.remove('open')});document.getElementById('SBOV').classList.remove('show')}
+function navC(){if(window.innerWidth<769)closeAllSb()}
+function sR(r,i){document.querySelectorAll('.rti').forEach(function(e,j){e.classList.toggle('ac',j===i)});document.getElementById('ELF').classList.toggle('hid',r!=='engineer');document.getElementById('MLF').classList.toggle('hid',r!=='manager');document.getElementById('ALF').classList.toggle('hid',r!=='accounts')}
+function pO(){var h='<option value="">Project</option>';CP.forEach(function(p){h+='<option value="'+p+'">'+p+'</option>'});return h}
+function cO(){var h='<option value="">Category</option>';Object.keys(CA).forEach(function(k){h+='<option value="'+k+'">'+k+'</option>'});return h}
+
+function doLogin(e,role){e.preventDefault();var uid='',pw='',em='',bid='';if(role==='engineer'){uid=document.getElementById('EID').value.trim().toUpperCase();pw=document.getElementById('EPW').value;bid='ELB'}else if(role==='manager'){em=document.getElementById('MGM').value;pw=document.getElementById('MPW').value;bid='MLB'}else{uid=document.getElementById('AID').value.trim().toUpperCase();pw=document.getElementById('APW').value;bid='ALB'}var b=document.getElementById(bid);b.disabled=true;b.textContent='...';sL('...');google.script.run.withSuccessHandler(function(r){hL();b.disabled=false;b.textContent='Sign In';if(!r||!r.success){toast(r?r.message:'Failed!','error');return}CU=r.user;CR=r.role;CP=r.projects||[];CA=r.categories||{};if(r.engineers)ENGS=r.engineers;toast('Welcome, '+CU.name+'!','ok');if(CR==='engineer')shE();else if(CR==='manager')shM();else shA()}).withFailureHandler(function(){hL();b.disabled=false;b.textContent='Sign In';toast('Error','error')}).serverLogin(role,uid,pw,em)}
+function doLogout(){CU=null;CR=null;CP=[];CA={};ENGS={};closeAllSb();['ED','MD','AD'].forEach(function(id){document.getElementById(id).style.display='none'});document.getElementById('LP').style.display='block';toast('Signed out','info')}
+
+// ENGINEER
+function shE(){document.getElementById('LP').style.display='none';document.getElementById('ED').style.display='block';document.getElementById('EAV').textContent=CU.name.charAt(0);document.getElementById('ENM').textContent=CU.name;document.getElementById('EID2').textContent=CU.id;document.getElementById('EDT').textContent=nw();var a=document.getElementById('ADT2');if(a)a.value=td();fSel('APJ',CP,'Select');rstR();eTab('dash')}
+function rstR(){RC=0;document.getElementById('EROWS').innerHTML='';addR();uC();uT()}
+function eTab(t){['dash','add','hist','apv'].forEach(function(x){var e=document.getElementById('ET-'+x);if(e)e.classList.toggle('ac',x===t)});document.querySelectorAll('#ED .ni').forEach(function(n,i){n.classList.toggle('ac',['dash','add','hist','apv'][i]===t)});document.getElementById('ETT').textContent={dash:'Dashboard',add:'Add Expense',hist:'History',apv:'Work Approval'}[t]||t;navC();if(t==='dash')lED();if(t==='hist')clrH();if(t==='apv')lApv()}
+function rE(){var a=null;['dash','add','hist','apv'].forEach(function(t){var e=document.getElementById('ET-'+t);if(e&&e.classList.contains('ac'))a=t});if(a==='dash')lED();else if(a==='hist')lHist();else if(a==='apv')lApv()}
+
+// ROWS
+function addR(){RC++;var n=RC;var h='<div class="erow" id="ER-'+n+'"><div class="erow-inner"><div class="rn">'+n+'</div><input type="date" id="RD'+n+'" value="'+td()+'"><select id="RP'+n+'">'+pO()+'</select><select id="RC2'+n+'" onchange="cC('+n+')">'+cO()+'</select><select id="RS'+n+'"><option value="">Sub</option></select><div class="det-cell" id="DC'+n+'"><input id="RDS'+n+'" placeholder="Select cat..." disabled style="flex:1;font-size:9px"></div><input type="number" id="RA'+n+'" min="1" placeholder="Rs." oninput="uT()"><input type="file" id="RFL'+n+'" accept=".jpg,.jpeg,.png,.pdf,.xlsx"><button class="dl" onclick="delR('+n+')">✕</button></div></div>';document.getElementById('EROWS').insertAdjacentHTML('beforeend',h);uC()}
+function cC(n){var cat=(document.getElementById('RC2'+n)||{}).value||'';var sub=document.getElementById('RS'+n);var dc=document.getElementById('DC'+n);if(sub)sub.innerHTML='<option value="">Sub</option>';if(!cat||!CA[cat]){if(dc)dc.innerHTML='<input id="RDS'+n+'" placeholder="Select cat" disabled style="flex:1;font-size:9px">';return}CA[cat].subheads.forEach(function(s){sub.innerHTML+='<option value="'+s+'">'+s+'</option>'});if(CA[cat].hasFromTo){dc.innerHTML='<input id="RF'+n+'" placeholder="From" style="flex:1;font-size:9px"><span class="sep">→</span><input id="RTO'+n+'" placeholder="To" style="flex:1;font-size:9px">'}else{dc.innerHTML='<input id="RDS'+n+'" placeholder="Description..." style="flex:1;font-size:9px">'}}
+function delR(n){var e=document.getElementById('ER-'+n);if(e)e.remove();reNum();uC();uT()}
+function reNum(){document.querySelectorAll('.erow').forEach(function(r,i){var rn=r.querySelector('.rn');if(rn)rn.textContent=i+1})}
+function cpLast(){var rows=document.querySelectorAll('.erow');if(!rows.length){addR();return}var l=rows[rows.length-1],lid=l.id.replace('ER-','');addR();var n=RC;var s;s=document.getElementById('RP'+lid);if(s&&document.getElementById('RP'+n))document.getElementById('RP'+n).value=s.value;s=document.getElementById('RD'+lid);if(s&&document.getElementById('RD'+n))document.getElementById('RD'+n).value=s.value;s=document.getElementById('RC2'+lid);if(s&&document.getElementById('RC2'+n)){document.getElementById('RC2'+n).value=s.value;cC(n)}setTimeout(function(){var ss=document.getElementById('RS'+lid);if(ss&&document.getElementById('RS'+n))document.getElementById('RS'+n).value=ss.value},130)}
+function uC(){var c=document.querySelectorAll('.erow').length;var r=document.getElementById('RCC');if(r)r.textContent=c;var i=document.getElementById('RI2');if(i)i.textContent=c+' row'+(c>1?'s':'')}
+function uT(){var t=0;document.querySelectorAll('.erow').forEach(function(r){var id=r.id.replace('ER-','');var v=document.getElementById('RA'+id);if(v)t+=Number(v.value)||0});var a=document.getElementById('TAM');if(a)a.textContent=fA(t)}
+function colR(){var rows=document.querySelectorAll('.erow'),data=[];rows.forEach(function(r){var id=r.id.replace('ER-','');data.push({project:(document.getElementById('RP'+id)||{}).value||'',date:(document.getElementById('RD'+id)||{}).value||'',categoryHead:(document.getElementById('RC2'+id)||{}).value||'',categorySubHead:(document.getElementById('RS'+id)||{}).value||'',fromLocation:(document.getElementById('RF'+id)||{}).value||'',toLocation:(document.getElementById('RTO'+id)||{}).value||'',description:(document.getElementById('RDS'+id)||{}).value||'',amount:(document.getElementById('RA'+id)||{}).value||''})});return data}
+
+function saveDraft(){var data=colR().filter(function(r){return r.project||r.categoryHead||r.amount});if(!data.length){toast('Fill rows!','warn');return}sL('Saving...');google.script.run.withSuccessHandler(function(r){hL();toast(r&&r.success?r.message:'Failed!',r&&r.success?'ok':'error')}).withFailureHandler(function(){hL();toast('Error','error')}).serverSaveDraft(CU.id,CU.name,data)}
+function loadDraft(){sL('Loading...');google.script.run.withSuccessHandler(function(r){hL();if(!r||!r.success){toast(r?r.message:'No draft','info');return}try{var rows=JSON.parse(r.draftData);if(!Array.isArray(rows)||!rows.length){toast('Empty!','warn');return}RC=0;document.getElementById('EROWS').innerHTML='';for(var i=0;i<rows.length;i++){var rd=rows[i];addR();var n=RC;var el;el=document.getElementById('RD'+n);if(el)el.value=rd.date||td();el=document.getElementById('RP'+n);if(el)el.value=rd.project||'';el=document.getElementById('RC2'+n);if(el){el.value=rd.categoryHead||'';cC(n)}el=document.getElementById('RA'+n);if(el)el.value=rd.amount||'';setTimeout((function(num,rd2){return function(){var f=document.getElementById('RF'+num);if(f)f.value=rd2.fromLocation||'';var t2=document.getElementById('RTO'+num);if(t2)t2.value=rd2.toLocation||'';var d2=document.getElementById('RDS'+num);if(d2)d2.value=rd2.description||'';var s=document.getElementById('RS'+num);if(s&&rd2.categorySubHead)s.value=rd2.categorySubHead}})(n,rd),180)}uC();uT();toast(r.message,'ok')}catch(e){toast('Error','error')}}).withFailureHandler(function(){hL();toast('Error','error')}).serverLoadDraft(CU.id)}
+function showPrev(){var data=colR().filter(function(r){return r.project&&r.categoryHead&&r.amount});if(!data.length){toast('No rows!','warn');return}var total=0;var h='<div class="tw"><table style="width:100%;border-collapse:collapse;font-size:10px"><thead><tr style="background:#1a237e;color:#fff"><th style="padding:5px">Date</th><th style="padding:5px">Project</th><th style="padding:5px">Category</th><th style="padding:5px">Detail</th><th style="padding:5px;text-align:right">Amount</th></tr></thead><tbody>';data.forEach(function(r,i){total+=Number(r.amount)||0;var det=(r.fromLocation&&r.toLocation)?r.fromLocation+' → '+r.toLocation:(r.description||'-');h+='<tr style="background:'+(i%2===0?'#fff':'#f5f5f5')+'"><td style="padding:5px;border:1px solid #eee">'+r.date+'</td><td style="padding:5px;border:1px solid #eee">'+r.project+'</td><td style="padding:5px;border:1px solid #eee">'+r.categoryHead+'</td><td style="padding:5px;border:1px solid #eee">'+det+'</td><td style="padding:5px;border:1px solid #eee;text-align:right;font-weight:700">'+fA(Number(r.amount)||0)+'</td></tr>'});h+='<tr style="background:#e8f5e9;font-weight:700"><td colspan="4" style="text-align:right;padding:6px">TOTAL:</td><td style="text-align:right;padding:6px;color:#2e7d32">'+fA(total)+'</td></tr></tbody></table></div>';document.getElementById('PMB').innerHTML=h;document.getElementById('PMO').classList.add('ac')}
+function cP(){document.getElementById('PMO').classList.remove('ac')}
+
+function submitAll(){var rows=document.querySelectorAll('.erow');if(!rows.length){toast('Add rows!','warn');return}var data=[],valid=true,fps=[];rows.forEach(function(r){var id=r.id.replace('ER-','');r.classList.remove('err');var proj=(document.getElementById('RP'+id)||{}).value||'';var dt=(document.getElementById('RD'+id)||{}).value||'';var cat=(document.getElementById('RC2'+id)||{}).value||'';var sub=(document.getElementById('RS'+id)||{}).value||'';var amt=(document.getElementById('RA'+id)||{}).value||'';var from=(document.getElementById('RF'+id)||{}).value||'';var to=(document.getElementById('RTO'+id)||{}).value||'';var desc=(document.getElementById('RDS'+id)||{}).value||'';var fi=document.getElementById('RFL'+id);if(!proj||!dt||!cat||!amt||Number(amt)<1){valid=false;r.classList.add('err');return}var ci=CA[cat]||{};if(ci.hasFromTo&&(!from.trim()||!to.trim())){valid=false;r.classList.add('err');toast('From & To required!','warn');return}if(ci.hasDescription&&!desc.trim()){valid=false;r.classList.add('err');toast('Description required!','warn');return}var rd={project:proj,date:dt,categoryHead:cat,categorySubHead:sub,fromLocation:from.trim(),toLocation:to.trim(),description:desc.trim(),amount:amt,attachment:null};data.push(rd);if(fi&&fi.files&&fi.files[0])fps.push(f2b(fi.files[0]).then(function(a){rd.attachment=a}));else fps.push(Promise.resolve())});if(!valid){toast('Fix highlighted rows!','error');return}if(!data.length){toast('No rows!','warn');return}var btn=document.getElementById('SBT');btn.disabled=true;btn.textContent='Processing...';Promise.all(fps).then(function(){var cl=data.map(function(r){return{project:r.project,date:r.date,categoryHead:r.categoryHead,categorySubHead:r.categorySubHead,fromLocation:r.fromLocation,toLocation:r.toLocation,description:r.description,amount:r.amount,attachment:r.attachment}});sL('Submitting '+cl.length+'...');google.script.run.withSuccessHandler(function(res){hL();btn.disabled=false;btn.textContent='Submit (0)';if(res&&res.success){toast(res.message,'ok');rstR();eTab('hist')}else toast(res?res.message:'Failed!','error')}).withFailureHandler(function(){hL();btn.disabled=false;btn.textContent='Submit';toast('Error','error')}).serverSubmitBatchExpenses(cl,{id:CU.id,name:CU.name,email:CU.email})})}
+
+// DASHBOARD - Work Approval stats
+function lED(){sL('...');google.script.run.withSuccessHandler(function(r){hL();if(!r||!r.success)return;var s=r.stats;document.getElementById('EST').innerHTML=sC('⏳','or',s.pendingApprovals,'Pending Approvals',fA(s.pendingApvAmt))+sC('✅','gr',s.approvedApprovals,'Approved',fA(s.approvedApvAmt))+sC('❌','rd',s.rejectedApprovals,'Rejected','')+sC('📋','bl',s.totalExpenses,'Total Expenses',fA(s.totalExpAmt));var apvs=(r.recentApprovals||[]).slice(0,5);document.querySelector('#ERT tbody').innerHTML=apvs.length?apvs.map(function(a,i){return'<tr><td>'+(i+1)+'</td><td>'+fD(a.date)+'</td><td>'+a.project+'</td><td style="font-weight:700">'+fA(a.amount)+'</td><td>'+sB(a.status)+'</td></tr>'}).join(''):eR(5,'No approvals');document.getElementById('EAB').textContent=s.pendingApprovals}).withFailureHandler(function(){hL()}).serverGetDashboardStats('engineer',CU.id,'')}
+
+// HISTORY with date range
+function clrH(){var s=document.getElementById('HST');var e=document.getElementById('HEND');if(s)s.value='';if(e)e.value='';_hd=[];document.querySelector('#EHT tbody').innerHTML=eR(7,'Select dates and click Search');document.getElementById('HSUM').innerHTML=''}
+function lHist(){var sd=(document.getElementById('HST')||{}).value||'';var ed=(document.getElementById('HED')||{}).value||'';sL('...');google.script.run.withSuccessHandler(function(r){hL();var d=(r&&r.expenses)||[];_hd=d;var total=0;d.forEach(function(e){total+=Number(e.amount)||0});var sm=document.getElementById('HSUM');if(sm)sm.innerHTML=d.length?'<div class="hist-sum"><div class="hs-card"><div class="hs-val">'+d.length+'</div><div class="hs-lbl">Entries</div></div><div class="hs-card" style="border-left-color:var(--ac)"><div class="hs-val" style="font-size:13px">'+(sd?fD(sd):'All')+' to '+(ed?fD(ed):'All')+'</div><div class="hs-lbl">Date Range</div></div><div class="hs-card" style="border-left-color:var(--ok)"><div class="hs-val" style="color:var(--ok)">'+fA(total)+'</div><div class="hs-lbl">Total Amount</div></div></div>':'';document.querySelector('#EHT tbody').innerHTML=d.length?d.map(function(e,i){return'<tr><td>'+(i+1)+'</td><td>'+fD(e.date)+'</td><td>'+e.project+'</td><td>'+e.categoryHead+(e.categorySubHead?' / '+e.categorySubHead:'')+'</td><td style="font-weight:700">'+fA(e.amount)+'</td><td>'+sB(e.status)+'</td><td><button class="btn btn-sm btn-ol" style="font-size:8px" onclick="showDet('+i+')">Full Detail</button></td></tr>'}).join(''):eR(7,sd||ed?'No expenses found':'Select dates and click Search')}).withFailureHandler(function(){hL()}).serverGetExpenses('engineer',CU.id,'','','',sd,ed)}
+
+function showDet(idx){var e=_hd[idx];if(!e)return;var from=e.fromLocation&&e.fromLocation!=='undefined'&&e.fromLocation!==''?e.fromLocation:null;var to=e.toLocation&&e.toLocation!=='undefined'&&e.toLocation!==''?e.toLocation:null;var desc=e.description&&e.description!=='undefined'&&e.description!==''?e.description:null;var att=e.attachmentUrl&&e.attachmentUrl!==''&&e.attachmentUrl!=='undefined';document.getElementById('DET-T').textContent='Detail: '+fD(e.date)+' | '+fA(e.amount);document.getElementById('DETB').innerHTML='<table class="det-t"><tr><td class="lbl">Date</td><td>'+fD(e.date)+'</td></tr><tr><td class="lbl">Project</td><td style="color:var(--pr);font-weight:700">'+e.project+'</td></tr><tr><td class="lbl">Category</td><td>'+e.categoryHead+(e.categorySubHead&&e.categorySubHead!=='undefined'?' / '+e.categorySubHead:'')+'</td></tr>'+(from?'<tr><td class="lbl">From</td><td>'+from+'</td></tr>':'')+(to?'<tr><td class="lbl">To</td><td>'+to+'</td></tr>':'')+(desc&&!from?'<tr><td class="lbl">Description</td><td>'+desc+'</td></tr>':'')+'<tr><td class="lbl">Amount</td><td style="font-size:18px;font-weight:800;color:var(--pr)">'+fA(e.amount)+'</td></tr><tr><td class="lbl">Status</td><td>'+sB(e.status)+'</td></tr><tr><td class="lbl">Submitted</td><td style="font-size:9px">'+e.submittedAt+'</td></tr><tr><td class="lbl">Bill/Receipt</td><td>'+(att?'<a href="'+e.attachmentUrl+'" target="_blank" style="color:#00BFFF;font-weight:700">View Attachment</a>':'No attachment')+'</td></tr></table>';document.getElementById('DETMO').classList.add('ac')}
+function cDet(){document.getElementById('DETMO').classList.remove('ac')}
+
+// APPROVALS
+function lApv(){var f=(document.getElementById('EAPF')||{}).value||'all';sL('...');google.script.run.withSuccessHandler(function(r){hL();var d=(r&&r.approvals)||[];document.querySelector('#EAT tbody').innerHTML=d.length?d.map(function(a,i){var att=a.attachmentUrl&&a.attachmentUrl!==''&&a.attachmentUrl!=='undefined'?'<a href="'+a.attachmentUrl+'" target="_blank" style="color:#00BFFF">Bill</a>':'—';return'<tr><td>'+(i+1)+'</td><td>'+fD(a.date)+'</td><td>'+a.project+'</td><td style="font-weight:700">'+fA(a.amount)+'</td><td>'+tD(a.description)+'</td><td>'+sB(a.status)+'</td><td style="font-size:8px">'+(a.remarks||'—')+'</td><td>'+att+'</td></tr>'}).join(''):eR(8,'No approvals');document.getElementById('EAB').textContent=d.filter(function(a){return a.status==='Pending'}).length}).withFailureHandler(function(){hL()}).serverGetApprovals('engineer',CU.id,'',f==='all'?'':f)}
+function sApv(e){e.preventDefault();var btn=document.getElementById('ASB2');btn.disabled=true;btn.textContent='...';var fi=document.getElementById('AFL2');(fi&&fi.files&&fi.files[0]?f2b(fi.files[0]):Promise.resolve(null)).then(function(att){sL('...');google.script.run.withSuccessHandler(function(r){hL();btn.disabled=false;btn.textContent='Submit Approval';if(r&&r.success){toast(r.message,'ok');document.getElementById('AFM').reset();var a=document.getElementById('ADT2');if(a)a.value=td();lApv()}else toast(r?r.message:'Failed','error')}).withFailureHandler(function(){hL();btn.disabled=false;btn.textContent='Submit Approval'}).serverSubmitApproval({engineerId:CU.id,engineerName:CU.name,engineerEmail:CU.email,project:document.getElementById('APJ').value,date:document.getElementById('ADT2').value,amount:document.getElementById('AAM').value,description:document.getElementById('ADE').value,attachment:att})})}
+
+// MANAGER
+function shM(){document.getElementById('LP').style.display='none';document.getElementById('MD').style.display='block';document.getElementById('MAV').textContent=CU.name.charAt(0);document.getElementById('MNM').textContent=CU.name;document.getElementById('MEM').textContent=CU.email;document.getElementById('MDT').textContent=nw();mTab('dash')}
+function mTab(t){['dash','apv','exp'].forEach(function(x){var e=document.getElementById('MT-'+x);if(e)e.classList.toggle('ac',x===t)});document.querySelectorAll('#MD .ni').forEach(function(n,i){n.classList.toggle('ac',['dash','apv','exp'][i]===t)});document.getElementById('MTT').textContent={dash:'Dashboard',apv:'Work Approvals',exp:'Expense Records'}[t]||t;navC();if(t==='dash')lMD();if(t==='apv')lMApv();if(t==='exp')lME()}
+function lMD(){sL('...');google.script.run.withSuccessHandler(function(r){hL();if(!r||!r.success)return;var s=r.stats;document.getElementById('MST').innerHTML=sC('⏳','or',s.pendingApprovals,'Pending',fA(s.pendingApvAmt))+sC('✅','gr',s.approvedApprovals,'Approved',fA(s.approvedApvAmt))+sC('❌','rd',s.rejectedApprovals,'Rejected','')+sC('💰','bl',s.totalApprovals,'Total Approvals','');document.getElementById('MAB').textContent=s.pendingApprovals;var ps=r.projectStats||{};document.getElementById('MPJ').innerHTML=CP.map(function(p){var st=ps[p]||{total:0,totalAmount:0};return'<div class="apv-card"><div class="apv-top"><div><div class="apv-eng">'+p+'</div><div class="apv-proj">'+st.total+' expenses</div></div><div style="font-size:14px;font-weight:800;color:var(--pr)">'+fA(st.totalAmount)+'</div></div></div>'}).join('')||'<p style="text-align:center;padding:20px;color:#aaa">No projects</p>'}).withFailureHandler(function(){hL()}).serverGetDashboardStats('manager','',CU.email)}
+function lMApv(){var f=(document.getElementById('MAPF')||{}).value||'Pending';sL('...');google.script.run.withSuccessHandler(function(r){hL();var d=(r&&r.approvals)||[];document.getElementById('MAB').textContent=d.filter(function(a){return a.status==='Pending'}).length;var div=document.getElementById('MAPD');if(!d.length){div.innerHTML='<div style="text-align:center;padding:28px;color:#aaa">No approvals</div>';return}div.innerHTML=d.map(function(a){var att=a.attachmentUrl&&a.attachmentUrl!==''&&a.attachmentUrl!=='undefined'?'<a href="'+a.attachmentUrl+'" target="_blank" class="attl">View Bill</a>':'';return'<div class="apv-card"><div class="apv-top"><div><div class="apv-eng">'+a.engineerName+' ('+a.engineerId+')</div><div class="apv-proj">'+a.project+'</div></div><div style="text-align:right"><div style="font-size:15px;font-weight:800;color:var(--pr)">'+fA(a.amount)+'</div>'+sB(a.status)+'</div></div><div class="apv-det"><div><label>Date</label><p>'+fD(a.date)+'</p></div><div><label>Submitted</label><p style="font-size:8px">'+a.submittedAt+'</p></div></div><div class="apv-desc">'+a.description+'</div>'+att+(a.status==='Pending'?'<div class="apv-acts"><button class="btn btn-sm btn-ok" onclick="mAct(\''+a.id+'\',\'Approved\')">Approve</button><button class="btn btn-sm btn-er" onclick="oR(\''+a.id+'\')">Reject</button></div>':'')+'</div>'}).join('')}).withFailureHandler(function(){hL()}).serverGetApprovals('manager','',CU.email,f==='all'?'':f)}
+function lME(){sL('...');google.script.run.withSuccessHandler(function(r){hL();var d=(r&&r.expenses)||[];document.querySelector('#MRT tbody').innerHTML=d.length?d.map(function(e,i){return'<tr><td>'+(i+1)+'</td><td>'+fD(e.date)+'</td><td>'+e.engineerName+'</td><td>'+e.project+'</td><td>'+e.categoryHead+'</td><td style="font-weight:700">'+fA(e.amount)+'</td><td>'+sB(e.status)+'</td></tr>'}).join(''):eR(7,'None')}).withFailureHandler(function(){hL()}).serverGetExpenses('manager','',CU.email,'','','','')}
+function mAct(id,act){sL('...');google.script.run.withSuccessHandler(function(r){hL();if(r&&r.success){toast(r.message,'ok');lMApv();lMD()}else toast('Failed','error')}).withFailureHandler(function(){hL()}).serverManagerAction(id,act,'approval',CU.name,'')}
+function oR(id){_ri=id;document.getElementById('RMT').value='';document.getElementById('RMO').classList.add('ac')}
+function cR(){document.getElementById('RMO').classList.remove('ac')}
+function doRej(){var rm=(document.getElementById('RMT')||{}).value||'';cR();sL('...');google.script.run.withSuccessHandler(function(r){hL();if(r&&r.success){toast(r.message,'ok');lMApv();lMD()}else toast('Failed','error')}).withFailureHandler(function(){hL()}).serverManagerAction(_ri,'Rejected','approval',CU.name,rm)}
+
+// ACCOUNTS
+function shA(){document.getElementById('LP').style.display='none';document.getElementById('AD').style.display='block';document.getElementById('ADT3').textContent=nw();var s=document.getElementById('AEPF');if(s){s.innerHTML='<option value="all">All Projects</option>';ALL_P.forEach(function(p){s.innerHTML+='<option value="'+p+'">'+p+'</option>'})}var sel=document.getElementById('PAY-SEL');if(sel){sel.innerHTML='<option value="">-- Select --</option>';for(var k in ENGS){sel.innerHTML+='<option value="'+ENGS[k].email+'" data-name="'+ENGS[k].name+'">'+ENGS[k].name+' ('+k+')</option>'}}aTab('dash')}
+function aTab(t){['dash','exp','apv','rpt','pay'].forEach(function(x){var e=document.getElementById('AT-'+x);if(e)e.classList.toggle('ac',x===t)});document.querySelectorAll('#AD .ni').forEach(function(n,i){n.classList.toggle('ac',['dash','exp','apv','rpt','pay'][i]===t)});document.getElementById('ATT').textContent={dash:'Dashboard',exp:'All Expenses',apv:'Approvals',rpt:'Reports',pay:'Send Payment'}[t]||t;navC();if(t==='dash')lAD();if(t==='exp')lAE();if(t==='apv')lAA();if(t==='rpt')lAR()}
+
+function fillPay(){var sel=document.getElementById('PAY-SEL');if(!sel||!sel.value)return;var opt=sel.options[sel.selectedIndex];document.getElementById('PAY-EM').value=sel.value;document.getElementById('PAY-NM').value=opt?opt.getAttribute('data-name')||'':''}
+function clrPay(){document.getElementById('PAY-EM').value='';document.getElementById('PAY-AMT').value='';document.getElementById('PAY-UTR').value='';document.getElementById('PAY-MSG').value='';document.getElementById('PAY-NM').value='';var sel=document.getElementById('PAY-SEL');if(sel)sel.selectedIndex=0}
+
+function lAD(){sL('...');google.script.run.withSuccessHandler(function(r){hL();if(!r||!r.success)return;var s=r.stats;document.getElementById('AST2').innerHTML=sC('⏳','or',s.pendingApprovals,'Pending Approvals',fA(s.pendingApvAmt))+sC('✅','gr',s.approvedApprovals,'Approved',fA(s.approvedApvAmt))+sC('❌','rd',s.rejectedApprovals,'Rejected','')+sC('💰','bl',s.totalExpenses,'Total Expenses',fA(s.totalExpAmt));var ra=(r.recentApprovals||[]).slice(0,6);document.querySelector('#ART2 tbody').innerHTML=ra.length?ra.map(function(a,i){return'<tr><td>'+(i+1)+'</td><td>'+fD(a.date)+'</td><td>'+a.engineerName+'</td><td>'+a.project+'</td><td style="font-weight:700">'+fA(a.amount)+'</td><td>'+sB(a.status)+'</td></tr>'}).join(''):eR(6,'None')}).withFailureHandler(function(){hL()}).serverGetDashboardStats('accounts','','')}
+
+function lAE(){var pf=(document.getElementById('AEPF')||{}).value||'all';sL('...');google.script.run.withSuccessHandler(function(r){hL();var d=(r&&r.expenses)||[];document.querySelector('#AET2 tbody').innerHTML=d.length?d.map(function(e,i){var from=e.fromLocation&&e.fromLocation!==''&&e.fromLocation!=='undefined'?e.fromLocation:'-';var det=e.toLocation&&e.toLocation!==''&&e.toLocation!=='undefined'?e.toLocation:(e.description&&e.description!=='undefined'?tD(e.description):'-');var att=e.attachmentUrl&&e.attachmentUrl!==''&&e.attachmentUrl!=='undefined'?'<a href="'+e.attachmentUrl+'" target="_blank" style="color:#00BFFF">Bill</a>':'—';return'<tr><td>'+(i+1)+'</td><td>'+fD(e.date)+'</td><td>'+e.engineerName+'</td><td>'+e.project+'</td><td>'+e.categoryHead+'</td><td>'+(e.categorySubHead||'—')+'</td><td>'+from+'</td><td>'+det+'</td><td style="font-weight:700">'+fA(e.amount)+'</td><td>'+sB(e.status)+'</td><td>'+att+'</td></tr>'}).join(''):eR(11,'None')}).withFailureHandler(function(){hL()}).serverGetExpenses('accounts','','','',pf==='all'?'':pf,'','')}
+
+function lAA(){var f=(document.getElementById('AAPF')||{}).value||'all';sL('...');google.script.run.withSuccessHandler(function(r){hL();var d=(r&&r.approvals)||[];document.querySelector('#AAT2 tbody').innerHTML=d.length?d.map(function(a,i){var att=a.attachmentUrl&&a.attachmentUrl!==''&&a.attachmentUrl!=='undefined'?'<a href="'+a.attachmentUrl+'" target="_blank" style="color:#00BFFF">Bill</a>':'—';return'<tr><td>'+(i+1)+'</td><td>'+fD(a.date)+'</td><td>'+a.engineerName+'</td><td>'+a.project+'</td><td style="font-weight:700">'+fA(a.amount)+'</td><td>'+tD(a.description)+'</td><td>'+sB(a.status)+'</td><td>'+(a.actionBy||'—')+'</td><td style="font-size:8px">'+(a.remarks||'—')+'</td><td>'+att+'</td></tr>'}).join(''):eR(10,'None')}).withFailureHandler(function(){hL()}).serverGetApprovals('accounts','','',f==='all'?'':f)}
+
+function lAR(){sL('...');google.script.run.withSuccessHandler(function(r){hL();if(!r||!r.success)return;var ps=r.projectStats||{};document.querySelector('#APT2 tbody').innerHTML=ALL_P.map(function(p){var s=ps[p]||{total:0,totalAmount:0};return'<tr><td style="font-weight:600">'+p+'</td><td>'+s.total+'</td><td style="font-weight:700">'+fA(s.totalAmount)+'</td></tr>'}).join('');var es=r.engineerStats||{},ek=Object.keys(es);document.querySelector('#AERT2 tbody').innerHTML=ek.length?ek.map(function(id){var s=es[id];return'<tr><td style="font-weight:600">'+s.name+'</td><td>'+id+'</td><td>'+s.total+'</td><td style="font-weight:700">'+fA(s.totalAmount)+'</td></tr>'}).join(''):eR(4,'No data')}).withFailureHandler(function(){hL()}).serverGetDashboardStats('accounts','','')}
+
+// PAYMENT
+function sendPay(){var email=(document.getElementById('PAY-EM')||{}).value||'';var amt=(document.getElementById('PAY-AMT')||{}).value||'';var utr=(document.getElementById('PAY-UTR')||{}).value||'';var msg=(document.getElementById('PAY-MSG')||{}).value||'';var name=(document.getElementById('PAY-NM')||{}).value||'';if(!email||email.indexOf('@')===-1){toast('Enter valid email!','error');return}if(!amt||Number(amt)<1){toast('Enter amount!','error');return}if(!utr||utr.trim()===''){toast('Enter UTR!','error');return}var btn=document.getElementById('PAY-BTN');btn.disabled=true;btn.textContent='Sending...';sL('Sending...');google.script.run.withSuccessHandler(function(r){hL();btn.disabled=false;btn.textContent='Send Payment Email';if(r&&r.success){toast(r.message,'ok');clrPay()}else toast(r?r.message:'Failed!','error')}).withFailureHandler(function(e){hL();btn.disabled=false;btn.textContent='Send Payment Email';toast('Error','error')}).serverSendPayment(email,Number(amt),utr.trim(),msg,name)}
+
+// EXPORT
+function doExp(type,role){sL('...');var eid=CR==='engineer'?CU.id:'',me=CR==='manager'?CU.email:'',pf='',sd='',ed='';if(CR==='accounts'&&type==='expenses'){pf=(document.getElementById('AEPF')||{}).value||''}if(CR==='engineer'&&type==='expenses'){sd=(document.getElementById('HST')||{}).value||'';ed=(document.getElementById('HED')||{}).value||''}google.script.run.withSuccessHandler(function(r){hL();if(!r||!r.success)return;var b=new Blob(['\uFEFF'+r.csv],{type:'text/csv;charset=utf-8;'});var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=r.fileName;a.click();URL.revokeObjectURL(u);toast('Downloaded!','ok')}).withFailureHandler(function(){hL()}).serverExportCSV(type,role,eid,me,'',pf==='all'?'':pf,sd,ed)}
+
+document.addEventListener('DOMContentLoaded',function(){var e=document.getElementById('EDT');if(e)e.textContent=nw();var m=document.getElementById('MDT');if(m)m.textContent=nw();var a=document.getElementById('ADT3');if(a)a.textContent=nw()});
+</script>
+</body>
+</html>
